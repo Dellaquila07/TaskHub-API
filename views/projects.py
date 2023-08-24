@@ -1,8 +1,10 @@
 import json
 
 from urllib.request import BaseHandler
+
 from models.project import Project
 from modules.project import ProjectModule
+from modules.db_session_manage import DBSessionManage
 
 
 class ProjectsHandler(BaseHandler):
@@ -43,7 +45,7 @@ class ProjectHandler(BaseHandler):
         """Get project"""
         try:
             database = None # to implement
-            db_session = None # to implement
+            db_session = DBSessionManage(database).get_db_session()
 
             project = Project.get_by_id(project_id, db_session)
             project_dict = project.to_dict()
@@ -55,18 +57,16 @@ class ProjectHandler(BaseHandler):
         except Exception as error:
             self.response_error(error)
 
-    def post(self, project_id):
+    def put(self, project_id):
         """Update project"""
         try:
             database = None # to implement
-            db_session = None # to implement
+            db_session = DBSessionManage(database).get_db_session()
             params = json.loads(self.request.body)
 
             project = Project.get_by_id(project_id, db_session)
 
-            project_module = ProjectModule(database, db_session)
-            project_module.project = project
-            project_module.update(params)
+            ProjectModule.update(project, params, db_session)
 
             db_session.close()
 
@@ -81,7 +81,7 @@ class ProjectHandler(BaseHandler):
         """Delete project"""
         try:
             database = None # to implement
-            db_session = None # to implement
+            db_session = DBSessionManage(database).get_db_session()
 
             project = Project.get_by_id(project_id, db_session)
             if not project:

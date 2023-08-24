@@ -1,6 +1,10 @@
 import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, String, asc, desc, text
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+
+MYSQL_BASE = declarative_base()
 
 
 class Project(MYSQL_BASE):
@@ -11,8 +15,8 @@ class Project(MYSQL_BASE):
     created_at = Column(DateTime, server_default=text('now()'))
     deadline = Column(DateTime)
     description = Column(String(500), nullable=False)
-    designated = ndb_relationship("contact_key", back_populates='project') # to implement
-    leader = ndb_relationship("contact_key", back_populates='project') # to implement
+    designated = relationship("User", back_populates='project')
+    leader = relationship("User", back_populates='project')
     status = Column(String(30), nullable=False, default='analysis')
     title = Column(String(100), nullable=False)
     updated_at = Column(DateTime, server_default=text('now()'))
@@ -106,8 +110,9 @@ class Project(MYSQL_BASE):
         :return Query: Query to get project list
         """
         return db_session.query(
-            cls.id, cls.created_at, cls.deadline, cls.description, cls.designated,
-            cls.leader, cls.status, cls.title, cls.updated_at
+            cls.id, cls.created_at, cls.deadline,
+            cls.description, cls.designated, cls.leader,
+            cls.status, cls.title, cls.updated_at
         )
 
     @classmethod

@@ -1,32 +1,23 @@
 import datetime
 
-from sqlalchemy import text
 from models.project import Project
+from modules.db_session_manage import DBSessionManage
 
 
 class ProjectModule(object):
     """Class for ProjectModule"""
 
-    def __init__(self, database, db_session):
-        """
-        Init project module
-        :param str database: Namespace
-        :param session db_session: Database session
-        """
-        self.project = None
-        self.database = database
-        self.db_session = db_session
-
     def create(self, params, database):
         """
         Create project
         :params dict params: params to create project
-        :params str database: Namespace
+        :params str database: Database
         :return Project
         """
-        db_session = None # to implement
+        db_session = DBSessionManage(database).get_db_session()
         try:
             project = Project(database)
+            project = self.set_project(project, params)
 
             db_session.add(project)
             db_session.commit()
@@ -38,32 +29,32 @@ class ProjectModule(object):
             db_session.close()
             raise
 
-    def update(self, params):
+    def update(self, project, params, db_session):
         """
         Update project
         :params dict params: params to update project
+        :param session db_session: Database session
         """
-        if not self.project:
+        if not project:
             raise Exception('ProjectModule: Project is required', 400)
 
         try:
-            self.project.deadline = params.get('deadline')
-            self.project.description = params.get('description')
-            self.project.designated = params.get('designated')
-            self.project.leader = params.get('leader')
-            self.project.status = params.get('status')
-            self.project.title = params.get('title')
+            project.deadline = params.get('deadline')
+            project.description = params.get('description')
+            project.designated = params.get('designated')
+            project.leader = params.get('leader')
+            project.status = params.get('status')
+            project.title = params.get('title')
 
-            self.project.updated_at = datetime.now()
+            project.updated_at = datetime.now()
 
-            self.db_session.add(self.project)
-            self.db_session.commit()
+            db_session.add(project)
+            db_session.commit()
 
         except:
-            self.db_session.rollback()
-            self.db_session.close()
+            db_session.rollback()
+            db_session.close()
             raise
-        
 
     def delete(self, project, db_session):
         """
@@ -77,8 +68,8 @@ class ProjectModule(object):
             db_session.commit()
 
         except:
-            self.db_session.rollback()
-            self.db_session.close()
+            db_session.rollback()
+            db_session.close()
             raise
 
     @classmethod
@@ -89,7 +80,7 @@ class ProjectModule(object):
         :param str database: Database
         :return dict: Search projects response
         """
-        db_session = None # to implement
+        db_session = DBSessionManage(database).get_db_session()
 
         projects, count = Project.get_by_filter_params(params, database)
 
@@ -124,6 +115,24 @@ class ProjectModule(object):
             projects_dict.append(project_dict)
 
         return projects_dict
+
+    @classmethod
+    def set_project(cls, project, params):
+        """
+        Set fields values of Project
+        :param project project: Project model
+        :param dict params: Project params
+        :param session db_session: Database session
+        :return Project
+        """
+        setattr(project, 'deadline', params.get('deadline'))
+        setattr(project, 'description', params.get('description'))
+        setattr(project, 'designated', params.get('designated'))
+        setattr(project, 'leader', params.get('leader'))
+        setattr(project, 'status', params.get('status'))
+        setattr(project, 'title', params.get('title'))
+
+        return project
 
     @staticmethod
     def get_default_response():
