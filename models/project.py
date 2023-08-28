@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import BigInteger, Column, DateTime, String, asc, desc, text
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, asc, desc, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -15,8 +15,8 @@ class Project(MYSQL_BASE):
     created_at = Column(DateTime, server_default=text('now()'))
     deadline = Column(DateTime)
     description = Column(String(500), nullable=False)
-    designated = relationship("User", back_populates='project')
-    leader = relationship("User", back_populates='project')
+    designateds = Column(BigInteger, ForeignKey('user.id'), nullable=True)
+    leaders = Column(BigInteger, ForeignKey('user.id'), nullable=True)
     status = Column(String(30), nullable=False, default='analysis')
     title = Column(String(100), nullable=False)
     updated_at = Column(DateTime, server_default=text('now()'))
@@ -51,27 +51,27 @@ class Project(MYSQL_BASE):
         ).first()
 
     @classmethod
-    def get_by_designated(cls, contact_key, db_session):
+    def get_by_designated(cls, user_key, db_session):
         """
         Get projects by designated
-        :param str contact_key: Contact db key
+        :param str user_key: Contact db key
         :param session db_session: Database session
         :return list of project
         """
         return db_session.query(cls).filter(
-            cls.designated == contact_key
+            cls.designated == user_key
         )
 
     @classmethod
-    def get_by_leader(cls, contact_key, db_session):
+    def get_by_leader(cls, user_key, db_session):
         """
         Get projects by leader
-        :param str contact_key: Contact db key
+        :param str user_key: User db key
         :param session db_session: Database session
         :return list of project
         """
         return db_session.query(cls).filter(
-            cls.leader == contact_key
+            cls.leader == user_key
         )
 
     @classmethod

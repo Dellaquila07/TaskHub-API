@@ -2,20 +2,20 @@ import json
 
 from urllib.request import BaseHandler
 
-from models.project import Project
-from modules.project import ProjectModule
+from models.user import User
+from modules.user import UserModule
 from modules.db_session_manage import DBSessionManage
 
 
-class ProjectsHandler(BaseHandler):
-    """Class for ProjectsHandler"""
+class UsersHandler(BaseHandler):
+    """Class for UsersHandler"""
 
     def get(self):
-        """Get projects"""
+        """Get users"""
         try:
             database = None # to implement
             params = self.request.GET
-            response = ProjectModule.search_by_filter_params(params, database)
+            response = UserModule.search_by_filter_params(params, database)
 
             self.response_send(response)
 
@@ -23,71 +23,71 @@ class ProjectsHandler(BaseHandler):
             self.response_error(error)
 
     def post(self):
-        """Create project"""
+        """Create user"""
         try:
             database = None # to implement]
             params = self.request.GET
-            project = ProjectModule.create(params, database)
+            user = UserModule.create(params, database)
 
             self.response_send({
-                'id': project.id,
-                'title': project.title
+                'id': user.id,
+                'name': user.fullname
             })
 
         except Exception as error:
             self.response_error(error)
 
 
-class ProjectHandler(BaseHandler):
-    """Class for ProjectHandlerProjectHandler"""
+class UserHandler(BaseHandler):
+    """Class for UserHandler"""
 
-    def get(self, project_id):
-        """Get project"""
+    def get(self, user_id):
+        """Get user"""
         try:
             database = None # to implement
             db_session = DBSessionManage(database).get_db_session()
 
-            project = Project.get_by_id(project_id, db_session)
-            project_dict = project.to_dict()
+            user = User.get_by_id(user_id, db_session)
+            user_dict = user.to_dict()
 
             db_session.close()
 
-            self.response_send(project_dict)
+            self.response_send(user_dict)
 
         except Exception as error:
             self.response_error(error)
 
-    def put(self, project_id):
-        """Update project"""
+    def put(self, user_id):
+        """Update user"""
         try:
             database = None # to implement
             db_session = DBSessionManage(database).get_db_session()
             params = json.loads(self.request.body)
 
-            project = Project.get_by_id(project_id, db_session)
+            user = User.get_by_id(user_id, db_session)
 
-            ProjectModule.update(project, params, db_session)
+            UserModule.update(user, params, db_session)
 
             db_session.close()
 
             self.response_send({
-                'project_id': project.id
+                'user_id': user.id
             })
 
         except Exception as error:
             self.response_error(error)
 
-    def delete(self, project_id):
-        """Delete project"""
+    def delete(self, user_id):
+        """Delete user"""
         try:
             database = None # to implement
             db_session = DBSessionManage(database).get_db_session()
 
-            project = Project.get_by_id(project_id, db_session)
-            if not project:
-                raise Exception('Project not found', 404)
+            user = User.get_by_id(user_id, db_session)
+            if not user:
+                raise Exception('User not found', 404)
 
-            ProjectModule.delete(project, db_session)
+            UserModule.delete(user, db_session)
 
             self.response_send(status_code=204)
 

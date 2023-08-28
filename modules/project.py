@@ -95,7 +95,7 @@ class ProjectModule(object):
     @classmethod
     def projects_to_dict(cls, projects):
         """
-        Return invoices in dict format
+        Return projects in dict format
         :param list of project: List with projects
         :return list(dict): List with projects in dict format
         """
@@ -141,6 +141,6 @@ class ProjectModule(object):
         :return dict: Projects default response
         """
         return {
-            'projects': [],
             'count': 0,
+            'projects': []
         }

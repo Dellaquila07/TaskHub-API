@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.declarative import declarative_base
 
+from models.user import User
 from models.project import Project
 
 
@@ -24,9 +25,9 @@ class DBSessionManage(object):
             self.create_tables(self.engine)
 
         except OperationalError as error:
-            self._mysql_database_connection_error(str(error))
+            self.sql_database_connection_error(str(error))
         except Exception as error:
-            self._mysql_database_connection_error(str(error))
+            self.sql_database_connection_error(str(error))
 
     def get_db_session(self):
         """Generate db session"""
@@ -34,7 +35,7 @@ class DBSessionManage(object):
 
         return session()
 
-    def _mysql_database_connection_error(self, error):
+    def sql_database_connection_error(self, error):
         """
         Mysql database connection error
         :param str error: Error in string format
@@ -53,9 +54,10 @@ class DBSessionManage(object):
         Base = declarative_base()
 
         tables = [
-            Project().__table__
+            Project().__table__,
+            User().__table__
         ]
-    
+
         Base.metadata.create_all(engine, tables=tables)
 
     @staticmethod
