@@ -58,7 +58,7 @@ class DBSessionManage(object):
             User().__table__
         ]
 
-        Base.metadata.create_all(engine, tables=tables)
+        Base.metadata.create_all(engine, tables)
 
     @staticmethod
     def get_server_connection():
@@ -66,11 +66,6 @@ class DBSessionManage(object):
         Get server connection not connected in database
         :return Engine: Server connection not connected with any database
         """
-        if os.getenv('DEPLOY_ENVIRONMENT') == 'development':
-            return create_engine(
-                # to implement
-            )
-        else:
-            return create_engine(
-                # to implement
-            )
+        return create_engine(
+            # to implement
+        )
