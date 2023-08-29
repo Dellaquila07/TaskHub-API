@@ -38,7 +38,7 @@ class DBSessionManage(object):
     def sql_database_connection_error(self, error):
         """
         Mysql database connection error
-        :param str error: Error in string format
+        :param str error: Error
         """
         if 'Connection refused' in error:
             raise Exception('Error on connect to database server')
@@ -63,8 +63,8 @@ class DBSessionManage(object):
     @staticmethod
     def get_server_connection():
         """
-        Get server connection not connected in database
-        :return Engine: Server connection not connected with any database
+        Get server connection
+        :return Engine: Server connection
         """
         return create_engine(
             # to implement
