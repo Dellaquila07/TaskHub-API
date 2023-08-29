@@ -37,7 +37,7 @@ class DBSessionManage(object):
 
     def sql_database_connection_error(self, error):
         """
-        Mysql database connection error
+        Sql database connection error
         :param str error: Error
         """
         if 'Connection refused' in error:
