@@ -4,10 +4,10 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, asc, de
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-MYSQL_BASE = declarative_base()
+MYSQL = declarative_base()
 
 
-class Project(MYSQL_BASE):
+class Project(MYSQL):
     """Project Model"""
     __tablename__ = "project"
 
@@ -137,3 +137,36 @@ class Project(MYSQL_BASE):
                 query = query.filter(cls.status == params['status'])
 
         return query
+
+
+class ProjectComments(MYSQL):
+    """Project Comments Model"""
+    __tablename__ = "project_comments"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, server_default=text('now()'))
+    description = Column(String(500), nullable=False)
+    project_id = Column(BigInteger, ForeignKey('project.id'), nullable=False)
+    reporter = Column(BigInteger, ForeignKey('user.id'), nullable=False)
+
+    def to_dict(self):
+        """
+        Return project comment in dict format
+        :return dict: Project comment in dict format
+        """
+        return {
+            'created_at': self.created_at,
+            'description': self.description,
+            'reporter': self.reporter
+        }
+
+    @classmethod
+    def get_all_by_project_id(cls, project_id, db_session):
+        """
+        Get all project comments items by project id
+        :param int project_id: Project id
+        :param Session db_session: Database session
+        :return list(ProjectComments): List with project comments items
+        """
+        return db_session.query(cls).filter(
+            cls.project_id == project_id).order_by(-cls.id).all()

@@ -2,7 +2,7 @@ import json
 
 from urllib.request import BaseHandler
 
-from models.project import Project
+from models.project import Project, ProjectComments
 from modules.project import ProjectModule
 from modules.db_session_manage import DBSessionManage
 
@@ -49,6 +49,7 @@ class ProjectHandler(BaseHandler):
 
             project = Project.get_by_id(project_id, db_session)
             project_dict = project.to_dict()
+            project_dict['comments'] = ProjectComments.get_all_by_project_id(project_id, db_session)
 
             db_session.close()
 

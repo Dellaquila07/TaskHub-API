@@ -1,10 +1,10 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, text
 from sqlalchemy.ext.declarative import declarative_base
 
-MYSQL_BASE = declarative_base()
+MYSQL = declarative_base()
 
 
-class User(MYSQL_BASE):
+class User(MYSQL):
     """User Model"""
     __tablename__ = "user"
 
